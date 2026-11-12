@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Imperium of Power</title>
+<meta name="description" content="Strategiespiel um die Herrschaft über die Welt. Römer gegen die großen Heere der Geschichte, offline gegen Bots.">
+<meta name="theme-color" content="#07090d">
+<meta property="og:title" content="Imperium of Power">
+<meta property="og:description" content="Rom gegen die großen Heere der Geschichte. Strategie auf der Weltkarte, offline gegen Bots.">
+<meta property="og:image" content="assets/img/legion.webp">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Imperium of Power">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/img/icon-192.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" href="assets/img/legion.webp" as="image">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Ladebild -->
+<section class="screen loader is-active" id="loader" aria-label="Laden">
+  <picture class="loader__img">
+    <source media="(orientation: portrait)" srcset="assets/img/legion-hoch.webp">
+    <img src="assets/img/legion.webp" alt="Römische Legion in Schlachtordnung vor einer brennenden Stadt" width="1456" height="819">
+  </picture>
+  <div class="smoke" aria-hidden="true"></div>
+  <div class="loader__content">
+    <p class="eyebrow" id="loaderEyebrow">Die Legionen sammeln sich</p>
+    <h1 class="title" data-app-name>Imperium of Power</h1>
+    <div class="loader__bar" aria-hidden="true"><span></span></div>
+    <p class="loader__tip" id="loaderTip"></p>
+  </div>
+</section>
+
+<!-- Hauptmenü -->
+<section class="screen menu" id="menu" aria-label="Hauptmenü">
+  <div class="menu__hero">
+    <img src="assets/img/kommandant.webp" alt="Römischer Feldherr mit bronzener Gesichtsmaske" width="900" height="952">
+  </div>
+  <div class="smoke smoke--soft" aria-hidden="true"></div>
+  <div class="menu__panel">
+    <p class="eyebrow">Strategie · Antike und Mittelalter</p>
+    <h1 class="title title--xl" data-app-name>Imperium of Power</h1>
+    <p class="lede">Führe Rom gegen die großen Heere der Geschichte. Erobere Gebiet um Gebiet, bis die Welt dir gehört.</p>
+    <nav class="menu__nav">
+      <button class="btn btn--primary" id="btnContinue" hidden>Feldzug fortsetzen</button>
+      <button class="btn btn--primary" id="btnNew">Neuer Feldzug</button>
+      <button class="btn" id="btnRules">Spielregeln</button>
+    </nav>
+    <div class="menu__foot">
+      <button class="iconbtn" id="btnSound" aria-label="Ton an oder aus"></button>
+      <span class="menu__note">Offline spielbar · keine Limits</span>
+    </div>
+  </div>
+</section>
+
+<!-- Spiel einrichten -->
+<section class="screen setup" id="setup" aria-label="Feldzug einrichten">
+  <header class="setup__head">
+    <button class="iconbtn" data-back aria-label="Zurück"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="1.8" fill="none"/></svg></button>
+    <h2 class="h2">Neuer Feldzug</h2>
+  </header>
+  <div class="setup__body">
+    <div class="setup__group">
+      <h3 class="label">Schauplatz</h3>
+      <div class="maps" id="mapChoice"></div>
+    </div>
+    <div class="setup__group">
+      <h3 class="label">Spielart</h3>
+      <div class="seg" id="modeChoice">
+        <button data-v="klassisch">Weltherrschaft<small>Vernichte alle Gegner</small></button>
+        <button data-v="missionen">Geheimauftrag<small>Erfülle deinen Auftrag zuerst</small></button>
+        <button data-v="hauptstadt">Hauptstädte<small>Halte alle Hauptstädte</small></button>
+      </div>
+    </div>
+    <div class="setup__group">
+      <h3 class="label">Sonderregeln</h3>
+      <div class="toggles" id="modChoice">
+        <label class="tog"><input type="checkbox" data-mod="fog"><span><b>Nebel des Krieges</b><small>Du siehst nur Gebiete an deinen Grenzen</small></span></label>
+        <label class="tog"><input type="checkbox" data-mod="blocked"><span><b>Sperrgebiete</b><small>Einige Gebiete sind unpassierbar</small></span></label>
+        <label class="tog"><input type="checkbox" data-mod="portals"><span><b>Geheimpfade</b><small>Drei verborgene Wege verbinden ferne Gebiete</small></span></label>
+        <label class="tog"><input type="checkbox" data-mod="barbarians"><span><b>Barbarenhorden</b><small>Wilde Horden greifen jeden an, der neben ihnen liegt</small></span></label>
+      </div>
+    </div>
+    <div class="setup__group">
+      <h3 class="label">Dein Heer</h3>
+      <div class="me">
+        <img src="assets/img/kommandant-portrait.webp" alt="" width="56" height="56">
+        <div><b>Rom</b><input id="myName" maxlength="18" value="Imperator" aria-label="Dein Name"></div>
+      </div>
+      <h3 class="label">Gegner <span class="stepper"><button id="oppMinus" aria-label="Einen Gegner weniger">−</button><b id="oppCount">3</b><button id="oppPlus" aria-label="Einen Gegner mehr">+</button></span></h3>
+      <div class="opps" id="opps"></div>
+    </div>
+    <div class="setup__group">
+      <h3 class="label">Regeln</h3>
+      <div class="rows">
+        <div class="row"><span>Feldzugkarten</span><div class="seg seg--sm" id="cardsChoice"><button data-v="steigend">Steigend</button><button data-v="fest">Fest</button><button data-v="aus">Aus</button></div></div>
+        <div class="row"><span>Truppen verlegen</span><div class="seg seg--sm" id="fortChoice"><button data-v="verbunden">Verbunden</button><button data-v="angrenzend">Angrenzend</button></div></div>
+        <div class="row"><span>Tempo der Gegner</span><div class="seg seg--sm" id="speedChoice"><button data-v="normal">Normal</button><button data-v="schnell">Schnell</button><button data-v="sofort">Sofort</button></div></div>
+        <div class="row"><span>Schlacht-Intro</span><div class="seg seg--sm" id="introChoice"><button data-v="immer">Immer</button><button data-v="gross">Große</button><button data-v="aus">Aus</button></div></div>
+      </div>
+    </div>
+  </div>
+  <footer class="setup__foot"><button class="btn btn--primary btn--wide" id="btnStart">In die Schlacht ziehen</button></footer>
+</section>
+
+<!-- Spielfeld -->
+<section class="screen game" id="game" aria-label="Spielfeld">
+  <div class="board" id="board"></div>
+  <header class="hud">
+    <div class="hud__player" id="hudPlayer"></div>
+    <div class="hud__actions">
+      <button class="iconbtn" id="btnMission" aria-label="Auftrag" hidden><svg viewBox="0 0 24 24"><path d="M6 4h10l2 2v14H6zM9 9h6M9 13h6M9 17h3" stroke="currentColor" stroke-width="1.6" fill="none"/></svg></button>
+      <button class="iconbtn" id="btnCards" aria-label="Feldzugkarten"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="11" height="15" rx="1.5" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M9 3h9.5A1.5 1.5 0 0120 4.5V18" stroke="currentColor" stroke-width="1.6" fill="none"/></svg><i class="badge" id="cardCount">0</i></button>
+      <button class="iconbtn" id="btnPlayers" aria-label="Übersicht der Heere"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.6"/></svg></button>
+      <button class="iconbtn" id="btnMenu" aria-label="Menü"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/></svg></button>
+    </div>
+  </header>
+  <div class="dock" id="dock"></div>
+  <aside class="sheet" id="sheet" aria-modal="true" role="dialog"></aside>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+</section>
+
+<!-- Schlacht-Intro -->
+<div class="intro" id="intro" aria-hidden="true">
+  <picture class="intro__img">
+    <source media="(orientation: portrait)" srcset="assets/img/legion-hoch.webp">
+    <img src="assets/img/legion.webp" alt="" width="1456" height="819">
+  </picture>
+  <div class="intro__text">
+    <p class="eyebrow" id="introEyebrow"></p>
+    <h2 class="title" id="introTitle"></h2>
+    <p class="intro__vs" id="introVs"></p>
+  </div>
+</div>
+
+<!-- Siegerbildschirm -->
+<section class="screen end" id="end" aria-label="Ende des Feldzugs"></section>
+
+<!-- Regeln -->
+<section class="screen rules" id="rules" aria-label="Spielregeln">
+  <header class="setup__head">
+    <button class="iconbtn" data-back aria-label="Zurück"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="1.8" fill="none"/></svg></button>
+    <h2 class="h2">Spielregeln</h2>
+  </header>
+  <div class="rules__body">
+    <h3>Ablauf eines Zuges</h3>
+    <p><b>1. Verstärken.</b> Du erhältst Truppen: ein Drittel deiner Gebiete (mindestens 3), dazu den Bonus jeder Region, die du vollständig hältst. Tippe auf eigene Gebiete, um sie zu platzieren.</p>
+    <p><b>2. Angreifen.</b> Wähle ein eigenes Gebiet mit mindestens 2 Truppen und dann ein benachbartes Feindgebiet. Der Angreifer würfelt mit bis zu 3, der Verteidiger mit bis zu 2 Würfeln. Die höchsten Würfel werden verglichen, bei Gleichstand gewinnt der Verteidiger. <i>Blitz</i> würfelt automatisch bis zur Entscheidung.</p>
+    <p><b>3. Verlegen.</b> Einmal pro Zug darfst du Truppen zwischen eigenen Gebieten verschieben, danach endet dein Zug.</p>
+    <h3>Feldzugkarten</h3>
+    <p>Wer in seinem Zug mindestens ein Gebiet erobert, erhält eine Karte: Legionär, Reiter oder Katapult, selten ein Adler als Joker. Drei gleiche oder drei verschiedene Karten tauschst du gegen Truppen. Bei <i>Steigend</i> wird jeder Tausch wertvoller (4, 6, 8, 10, 12, 15, dann +5). Gehört dir ein Gebiet auf einer eingelösten Karte, erhält es 2 Truppen extra. Ab 5 Karten musst du tauschen.</p>
+    <h3>Spielarten</h3>
+    <p><b>Weltherrschaft:</b> Vernichte alle Gegner. <b>Geheimauftrag:</b> Jeder Spieler hat ein geheimes Ziel, wer es zuerst erfüllt, gewinnt. <b>Hauptstädte:</b> Jeder beginnt mit einer Hauptstadt, wer alle hält, gewinnt.</p>
+    <h3>Sonderregeln</h3>
+    <p><b>Nebel des Krieges:</b> Gegnerische Truppen siehst du nur an deinen Grenzen. <b>Sperrgebiete:</b> Einige Gebiete sind unpassierbar. <b>Geheimpfade:</b> Gleich nummerierte Runen-Tore gelten als benachbart. <b>Barbarenhorden:</b> Neutrale Horden wachsen jede Runde und greifen ihre Nachbarn an.</p>
+    <h3>Karten</h3>
+    <p><b>Die Welt:</b> 42 Gebiete auf 6 Kontinenten. <b>Orbis Terrarum:</b> die Alte Welt mit Europa, Afrika und Asien in 47 antiken Gebieten und 8 Regionen. Amerika und Ozeanien gibt es dort noch nicht.</p>
+    <h3>Datenschutz</h3>
+    <p>Das Spiel läuft komplett auf deinem Gerät. Es gibt kein Konto, keine Werbung, kein Tracking und keine Cookies. Spielstand und Einstellungen liegen nur im Speicher deines Browsers. Schriften und Bilder sind Teil der App und werden von keinem fremden Server geladen. Der Webserver, über den du die App installierst, kann technisch bedingt deine IP-Adresse kurz protokollieren.</p>
+    <p class="rules__credit">Kartendaten: Natural Earth (gemeinfrei). Schriften: Cinzel, Inter (SIL Open Font License).</p>
+  </div>
+</section>
+
+<script type="module" src="js/ui.js"></script>
+</body>
+</html>
